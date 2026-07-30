@@ -49,12 +49,27 @@
   --color-mint-foreground: var(--mint-foreground);
   --color-surface-alt: var(--surface-alt);
   --color-success: var(--success);
+  --color-step-navy: var(--step-navy);
+  --color-step-navy-deep: var(--step-navy-deep);
+  --color-step-red: var(--step-red);
+  --color-step-red-hover: var(--step-red-hover);
+  --color-step-yellow: var(--step-yellow);
+  --color-step-cyan: var(--step-cyan);
+  --color-step-green: var(--step-green);
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Archivo', 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 :root {
   --radius: 0.75rem;
+  --step-navy: oklch(0.26 0.09 280);
+  --step-navy-deep: oklch(0.17 0.06 278);
+  --step-red: oklch(0.56 0.23 28);
+  --step-red-hover: oklch(0.62 0.22 28);
+  --step-yellow: oklch(0.83 0.15 82);
+  --step-cyan: oklch(0.80 0.13 210);
+  --step-green: oklch(0.72 0.16 155);
   --background: oklch(0.98 0.005 75);
   --foreground: oklch(0.15 0.01 60);
   --card: oklch(1 0 0);
@@ -286,4 +301,29 @@
   opacity: 1 !important;
   transform: translateY(0) !important;
   filter: blur(0) !important;
+}
+
+/* ── STEP hub ── */
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 3.5s ease-in-out infinite;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
