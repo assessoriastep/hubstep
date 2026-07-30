@@ -1,380 +1,246 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  Infinity as InfinityIcon, Flame, CalendarDays, Moon, Bell, BarChart3, CloudUpload,
-  CheckCircle2, TrendingUp, Sparkles, ArrowRight, Star, Quote,
-} from "lucide-react";
-import heroBg from "@/assets/hero-bg.jpg";
-import shadowBg from "@/assets/shadow-bg.jpg";
+import { createFileRoute } from "@tanstack/react-router";
+import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { StepLogo } from "@/components/StepLogo";
+import { hubGroups, socialLinks, whatsappUrl, type HubLink } from "@/lib/step-links";
+import spaceHero from "@/assets/space-hero.jpg";
+import robotMascot from "@/assets/robot-mascot.png";
 
+const TITLE = "STEP Educação — Central de links e plataformas";
+const DESCRIPTION =
+  "Um só endereço para acessar todas as plataformas, materiais e canais de suporte da STEP Educação.";
 
 export const Route = createFileRoute("/")({
-  component: LandingPage,
+  component: HubPage,
   head: () => ({
     meta: [
-      { title: "Continuum — Build lasting habits, one day at a time" },
-      { name: "description", content: "A calm, focused habit tracker. Track streaks, visualize progress, and build your daily ritual. Free, ad-free, distraction-free." },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
 });
 
-function LandingPage() {
-  const navigate = useNavigate();
-  const [checked, setChecked] = useState(false);
+const accentVar: Record<HubLink["accent"], string> = {
+  red: "var(--step-red)",
+  yellow: "var(--step-yellow)",
+  cyan: "var(--step-cyan)",
+  green: "var(--step-green)",
+};
 
-  useEffect(() => {
-    import("@/integrations/supabase/client").then(({ supabase }) => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          navigate({ to: "/app" });
-        } else {
-          setChecked(true);
-        }
-      });
-    }).catch(() => setChecked(true));
-  }, [navigate]);
-
+function HubPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--step-navy-deep)" }}>
       <Hero />
-      <Features />
-      <HowItWorks />
-      <Reviews />
-      <FinalCTA />
-      <Footer />
+      <LinksSection />
+      <SiteFooter />
+      <WhatsappButton />
     </div>
   );
 }
 
-/* ─── Hero (dark, full-bleed, with navbar) ─── */
+/* ─── Hero espacial ─── */
 function Hero() {
   return (
-    <>
-      <section className="relative pb-24 pt-0 lg:pb-32 lg:pt-8 xl:pb-40 xl:pt-12" style={{ background: "#050d0a" }}>
-        {/* Background image — weighted to the right */}
-        <img
-          src={heroBg}
-          alt=""
-          width={1920}
-          height={1080}
-          className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none"
-          aria-hidden="true"
-        />
-        {/* Left-side gradient for text legibility */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to right, rgba(5,13,10,0.5), rgba(5,13,10,0.13), transparent)` }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(to bottom, rgba(0,0,0,0.26), transparent, rgba(5,13,10,0))` }} />
-
-        {/* Navbar */}
-        <nav className="relative z-20 max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <InfinityIcon className="w-7 h-7 text-white" strokeWidth={2.5} />
-            <span className="text-xl font-semibold text-white/90 tracking-tight">Continuum</span>
-          </Link>
-
-          <div className="hidden sm:flex items-center gap-8 text-sm text-white">
-            <a href="#features" className="hover:text-white/70 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-white/70 transition-colors">How it works</a>
-            <a href="#reviews" className="hover:text-white/70 transition-colors">Reviews</a>
-          </div>
-
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/30 bg-white/10 text-white px-5 py-2.5 text-sm font-medium hover:bg-white/20 backdrop-blur-sm transition-all duration-200 active:scale-[0.97]"
-          >
-            Get started
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </nav>
-
-        {/* Hero content — left aligned */}
-        <div className="relative z-10 max-w-5xl mx-auto px-5 pt-24 pb-12">
-          <div className="max-w-xl">
-            <ScrollReveal delay={80}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white text-left" style={{ lineHeight: "1.08" }}>
-                Build lasting habits,<br />one day at a time
-              </h1>
-            </ScrollReveal>
-
-            <ScrollReveal delay={160}>
-              <p className="mt-6 text-lg text-white text-left" style={{ textWrap: "pretty", lineHeight: "1.6" }}>
-                Continuum is a calm, focused habit tracker that helps you build consistency through streaks, visual progress, and zero distractions.
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={240}>
-              <div className="mt-10 flex flex-col sm:flex-row items-start gap-3">
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#FDAA3E] text-[#1a1a1a] px-7 py-3.5 text-sm font-bold hover:bg-[#fdb95e] transition-all duration-200 active:scale-[0.97] shadow-lg shadow-[#FDAA3E]/25"
-                >
-                  Get started free
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
-
-/* ─── Features ─── */
-const features = [
-  { icon: Flame, title: "Streak tracking", desc: "Watch your momentum build day by day. Never break the chain." },
-  { icon: CalendarDays, title: "Calendar heatmap", desc: "See your consistency at a glance with a beautiful 30-day view." },
-  { icon: BarChart3, title: "Smart insights", desc: "Current streak, longest streak, completion rate — all the stats that matter." },
-  { icon: Bell, title: "Gentle reminders", desc: "Set custom reminder times so you never forget your daily rituals." },
-  { icon: Moon, title: "Dark mode", desc: "Easy on the eyes, day or night. Follows your system or your choice." },
-  { icon: CloudUpload, title: "Cloud sync", desc: "Sign in to sync your habits across devices. Your data, always safe." },
-];
-
-function Features() {
-  return (
-    <section id="features" className="py-28 relative bg-white">
-      <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: `url(${shadowBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', opacity: 0.75 }} />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-6xl mx-auto px-5 relative">
-        <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
-          {/* Left: App preview — light mode on mint bg */}
-          <div className="w-full lg:w-[420px] flex-shrink-0">
-            <div className="relative">
-              <div className="rounded-xl bg-white border border-black/[0.06] shadow-xl overflow-hidden">
-                {/* Mock browser chrome */}
-                <div className="border-b border-black/5 px-5 py-3 flex items-center gap-3 bg-gray-50/80">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-black/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-black/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-black/10" />
-                  </div>
-                  <div className="flex-1" />
-                </div>
-
-                {/* Mock app content — light mode */}
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className="text-xs text-black/40">Good morning</p>
-                    <p className="text-lg font-semibold text-black/90 mt-0.5">Your daily ritual</p>
-                    <p className="text-xs text-black/40 mt-1">Tuesday, March 25 · 2 of 4 minted</p>
-                  </div>
-
-                  {/* Mock progress ring */}
-                  <div className="flex justify-center py-3">
-                    <div className="w-20 h-20 rounded-full border-[4px] border-black/[0.06] flex items-center justify-center relative">
-                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
-                        <circle cx="40" cy="40" r="35" fill="none" strokeWidth="4" stroke="#FDAA3E" strokeDasharray="220" strokeDashoffset="110" strokeLinecap="round" />
-                      </svg>
-                      <span className="text-lg font-bold text-black/80">50%</span>
-                    </div>
-                  </div>
-
-                  {/* Mock habit cards */}
-                  {[
-                    { name: "Morning meditation", color: "#FDAA3E", done: true },
-                    { name: "Read 20 pages", color: "hsl(217, 91%, 60%)", done: true },
-                    { name: "Exercise 30 min", color: "hsl(25, 95%, 53%)", done: false },
-                    { name: "Journal", color: "hsl(270, 95%, 75%)", done: false },
-                  ].map((h) => (
-                    <div key={h.name} className="flex items-center gap-3 rounded-xl border border-black/[0.06] bg-black/[0.02] px-4 py-3">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: h.color }} />
-                      <span className={`flex-1 text-sm ${h.done ? "line-through text-black/30" : "text-black/70"}`}>{h.name}</span>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${h.done ? "bg-primary border-primary" : "border-black/15"}`}>
-                        {h.done && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Features content */}
-          <div className="flex-1">
-            <ScrollReveal>
-              <div className="mb-10">
-                <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">Features</p>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground" style={{ lineHeight: "1.15" }}>
-                  Everything you need,<br />nothing you don't
-                </h2>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid sm:grid-cols-2 gap-5">
-              {features.map((f, i) => (
-                <ScrollReveal key={f.title} delay={i * 70}>
-                  <div className="group rounded-2xl border border-black/[0.04] bg-black/[0.03] p-5 hover:bg-black/[0.05] hover:border-black/[0.08] transition-all duration-300">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300">
-                      <f.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-1">{f.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── How it works ─── */
-const steps = [
-  { num: "1", icon: CheckCircle2, title: "Create your habits", desc: "Add the habits you want to build — daily, specific days, or a weekly goal." },
-  { num: "2", icon: Sparkles, title: "Tap to complete", desc: "One tap each day to log your progress. Quick, satisfying, done." },
-  { num: "3", icon: TrendingUp, title: "Watch your growth", desc: "See streaks grow, heatmaps fill in, and your consistency compound over time." },
-];
-
-function HowItWorks() {
-  return (
-    <section id="how-it-works" className="py-28 bg-white border-y border-border/30">
-      <div className="max-w-4xl mx-auto px-5">
-        <ScrollReveal>
-          <div className="text-center mb-16">
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">How it works</p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground" style={{ lineHeight: "1.15" }}>
-              Three steps to a better routine
-            </h2>
-          </div>
-        </ScrollReveal>
-
-        <div className="relative grid md:grid-cols-3 gap-8">
-          {/* Connecting line between steps (desktop only) */}
-          <div className="hidden md:block absolute top-7 left-[calc(16.67%+28px)] right-[calc(16.67%+28px)] h-px border-t-2 border-dashed border-primary/20" />
-
-          {steps.map((s, i) => (
-            <ScrollReveal key={s.num} delay={i * 100}>
-              <div className="text-center relative">
-                <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-5 text-lg font-bold shadow-lg shadow-primary/15">
-                  {s.num}
-                </div>
-                <h3 className="font-semibold text-foreground text-lg mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Reviews ─── */
-const reviews = [
-  { name: "Daniel Cooper", role: "Product designer", avatar: "https://trovdwfeqyzlxzrtfbjv.supabase.co/storage/v1/object/public/assets/avatars/e20b66f6-e7e9-4c00-93d3-506c78cb66c2/avatar-19.jpg", quote: "Finally a habit app that doesn't try to be a social network. Just me and my habits.", rating: 5 },
-  { name: "Emma Lindström", role: "Software engineer", avatar: "https://trovdwfeqyzlxzrtfbjv.supabase.co/storage/v1/object/public/assets/avatars/307e7512-1637-4ea2-a5cd-875afeb1002b/avatar-21.jpg", quote: "The streak tracking is addictive in the best way. I've been consistent for 47 days now.", rating: 5 },
-  { name: "Ryan Mitchell", role: "Grad student", avatar: "https://trovdwfeqyzlxzrtfbjv.supabase.co/storage/v1/object/public/assets/avatars/6b77ccde-dbfd-4c23-8c9f-ce748683068a/avatar-16.jpg", quote: "Love the heatmap. Seeing my progress visually keeps me motivated more than any badge system.", rating: 5 },
-  { name: "Mei Lin", role: "Freelance writer", avatar: "https://trovdwfeqyzlxzrtfbjv.supabase.co/storage/v1/object/public/assets/avatars/b706d9a7-3a45-4fdd-ab47-c7023d4d0cfa/avatar-20.jpg", quote: "Simple, clean, no ads. This is what every habit tracker should be. Dark mode is gorgeous too.", rating: 5 },
-];
-
-function Reviews() {
-  return (
-    <section id="reviews" className="py-28">
-      <div className="max-w-5xl mx-auto px-5">
-        <ScrollReveal>
-          <div className="text-center mb-16">
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">Reviews</p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground" style={{ lineHeight: "1.15" }}>
-              Loved by habit builders
-            </h2>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid sm:grid-cols-2 gap-5">
-          {reviews.map((r, i) => (
-            <ScrollReveal key={r.name} delay={i * 80}>
-              <div className="relative rounded-2xl border border-border/50 bg-card p-6 overflow-hidden">
-                {/* Decorative quote mark */}
-                <Quote className="absolute top-4 right-4 w-10 h-10 text-primary/[0.06] rotate-180" />
-
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: r.rating }).map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-primary text-primary" />
-                  ))}
-                </div>
-                <p className="text-sm text-foreground leading-relaxed mb-5 relative">"{r.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <img src={r.avatar} alt={r.name} className="w-[4.5rem] h-[4.5rem] rounded-full object-cover" loading="lazy" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{r.name}</p>
-                    <p className="text-xs text-muted-foreground">{r.role}</p>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Final CTA ─── */
-function FinalCTA() {
-  return (
-    <section className="relative overflow-hidden py-28" style={{ background: "#050d0a" }}>
-      {/* Reuse hero bg for visual cohesion */}
+    <header className="relative overflow-hidden pb-28" style={{ backgroundColor: "var(--step-navy-deep)" }}>
       <img
-        src={heroBg}
+        src={spaceHero}
         alt=""
         width={1920}
-        height={1080}
-        loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none select-none"
+        height={1088}
+        className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-center"
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050d0a] via-transparent to-[#050d0a] pointer-events-none" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, color-mix(in oklab, var(--step-navy-deep) 45%, transparent), transparent 40%, var(--step-navy-deep))",
+        }}
+      />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-5 text-center">
-        <ScrollReveal>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white" style={{ lineHeight: "1.15" }}>
-            Ready to build better habits?
-          </h2>
-          <p className="mt-4 text-white max-w-md mx-auto" style={{ textWrap: "pretty" }}>
-            Join thousands of people using Continuum to build consistency, one day at a time.
-          </p>
-          <Link
-            to="/login"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#FDAA3E] text-[#1a1a1a] px-8 py-4 text-sm font-semibold hover:bg-[#fdb95e] transition-all duration-200 active:scale-[0.97] shadow-lg shadow-[#FDAA3E]/25"
+      {/* Navbar pílula */}
+      <div className="relative z-20 px-4 pt-5">
+        <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 rounded-full bg-white px-5 py-3 shadow-2xl sm:px-7">
+          <a href="#topo" className="flex items-center" aria-label="STEP Educação — início">
+            <StepLogo />
+          </a>
+
+          <div className="hidden items-center gap-7 text-sm font-medium md:flex" style={{ color: "var(--step-navy)" }}>
+            {hubGroups.map((g) => (
+              <a key={g.id} href={`#${g.id}`} className="transition-opacity hover:opacity-60">
+                {g.label}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-display rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition-transform duration-200 active:scale-[0.97]"
+            style={{ backgroundColor: "var(--step-red)" }}
           >
-            Get started free
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </ScrollReveal>
+            Entrar em contato
+          </a>
+        </nav>
       </div>
-    </section>
+
+      {/* Conteúdo */}
+      <div
+        id="topo"
+        className="relative z-10 mx-auto grid max-w-5xl items-center gap-8 px-5 pt-16 md:grid-cols-[1.15fr_0.85fr] md:pt-20"
+      >
+        <div>
+          <p
+            className="font-display text-sm font-bold uppercase tracking-[0.18em]"
+            style={{ color: "var(--step-yellow)" }}
+          >
+            Tudo da STEP em um só lugar
+          </p>
+          <h1 className="font-display mt-4 text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl">
+            Central de acessos
+            <br />
+            STEP Educação
+          </h1>
+          <p className="mt-5 max-w-md text-base leading-relaxed text-white/80">
+            Plataformas, materiais, formações e suporte reunidos em uma única página. Guarde este link e chegue
+            direto onde precisa.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#plataformas"
+              className="font-display inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white transition-transform duration-200 active:scale-[0.97]"
+              style={{ backgroundColor: "var(--step-red)" }}
+            >
+              Ver todos os acessos
+            </a>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-display inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/20"
+            >
+              Falar com especialista
+            </a>
+          </div>
+        </div>
+
+        <div className="relative flex justify-center md:justify-end">
+          <img
+            src={robotMascot}
+            alt="Mascote robô da STEP"
+            width={1200}
+            height={1408}
+            className="animate-float-slow w-52 max-w-full drop-shadow-2xl sm:w-64 md:w-full md:max-w-[300px]"
+          />
+        </div>
+      </div>
+    </header>
   );
 }
 
-/* ─── Footer ─── */
-function Footer() {
+/* ─── Links agrupados ─── */
+function LinksSection() {
   return (
-    <footer className="border-t border-border/40 py-12">
-      <div className="max-w-5xl mx-auto px-5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <InfinityIcon className="w-6 h-6 text-foreground" strokeWidth={2.5} />
-            <span className="font-semibold text-foreground text-sm">Continuum</span>
-          </div>
+    <main className="relative -mt-16 pb-20">
+      <div className="mx-auto max-w-5xl space-y-14 px-5">
+        {hubGroups.map((group) => (
+          <section key={group.id} id={group.id} className="scroll-mt-28">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "var(--step-red)" }} />
+              <h2 className="font-display text-xl font-bold text-white sm:text-2xl">{group.label}</h2>
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-foreground transition-colors">How it works</a>
-            <a href="#reviews" className="hover:text-foreground transition-colors">Reviews</a>
-            <Link to="/login" className="hover:text-foreground transition-colors">Sign in</Link>
-            <Link to="/login" className="hover:text-foreground transition-colors">Get started</Link>
-          </div>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {group.links.map((link) => (
+                <li key={link.title}>
+                  <LinkCard link={link} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </main>
+  );
+}
 
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Continuum</p>
+function LinkCard({ link }: { link: HubLink }) {
+  const color = accentVar[link.accent];
+  const Icon = link.icon;
+
+  return (
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.08]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <span
+          className="flex h-11 w-11 items-center justify-center rounded-xl"
+          style={{ backgroundColor: `color-mix(in oklab, ${color} 22%, transparent)` }}
+        >
+          <Icon className="h-5 w-5" style={{ color }} />
+        </span>
+        <ArrowUpRight className="h-5 w-5 text-white/40 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
+      </div>
+
+      <h3 className="font-display mt-4 text-base font-bold text-white">{link.title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-white/60">{link.description}</p>
+    </a>
+  );
+}
+
+/* ─── Rodapé ─── */
+function SiteFooter() {
+  return (
+    <footer className="border-t border-white/10 py-10">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div className="rounded-full bg-white px-4 py-2">
+          <StepLogo />
         </div>
+
+        <div className="flex items-center gap-3">
+          {socialLinks.map((s) => (
+            <a
+              key={s.label}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-white/40 hover:text-white"
+            >
+              <s.icon className="h-4 w-4" />
+            </a>
+          ))}
+        </div>
+
+        <p className="text-xs text-white/50">
+          STEP Educação © {new Date().getFullYear()}
+        </p>
       </div>
     </footer>
   );
 }
 
-/* ─── Scroll reveal wrapper (animations removed) ─── */
-function ScrollReveal({ children }: { children: React.ReactNode; delay?: number }) {
-  return <>{children}</>;
+/* ─── WhatsApp flutuante ─── */
+function WhatsappButton() {
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Falar no WhatsApp"
+      className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-2xl transition-transform duration-200 hover:scale-105 active:scale-95"
+      style={{ backgroundColor: "var(--step-green)" }}
+    >
+      <MessageCircle className="h-6 w-6" />
+    </a>
+  );
 }
