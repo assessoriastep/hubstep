@@ -302,3 +302,28 @@
   transform: translateY(0) !important;
   filter: blur(0) !important;
 }
+
+/* ── STEP hub ── */
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 3.5s ease-in-out infinite;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
