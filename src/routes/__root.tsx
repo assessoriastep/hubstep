@@ -1,5 +1,4 @@
 import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -8,18 +7,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Continuum — Build lasting habits" },
-      { name: "description", content: "A calm, focused habit tracker. Track streaks, visualize progress, and build your daily ritual." },
-      { name: "author", content: "Continuum" },
-      { property: "og:title", content: "Continuum — Build lasting habits" },
-      { property: "og:description", content: "A calm, focused habit tracker. Track streaks, visualize progress, and build your daily ritual." },
+      { title: "STEP Educação — Central de links e plataformas" },
+      { name: "description", content: "Um só endereço para acessar todas as plataformas, materiais e canais de suporte da STEP Educação." },
+      { name: "author", content: "STEP Educação" },
+      { property: "og:title", content: "STEP Educação — Central de links e plataformas" },
+      { property: "og:description", content: "Um só endereço para acessar todas as plataformas, materiais e canais de suporte da STEP Educação." },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/b9uXYmgdTyWTYhHfslbu4ZrHRZ73/social-images/social-1775640713838-continuum.webp" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/b9uXYmgdTyWTYhHfslbu4ZrHRZ73/social-images/social-1775640713838-continuum.webp" },
-      { name: "twitter:title", content: "Continuum — Build lasting habits" },
-      { name: "twitter:description", content: "A calm, focused habit tracker. Track streaks, visualize progress, and build your daily ritual." },
     ],
     links: [
       {
@@ -39,18 +33,15 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: appCss,
       },
-    ],
-    scripts: [
       {
-        children: `
-          (function() {
-            var theme = localStorage.getItem('continuum_theme') || 'light';
-            if (theme === 'system') {
-              theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            }
-            if (theme === 'dark') document.documentElement.classList.add('dark');
-          })();
-        `,
+        rel: "icon",
+        type: "image/svg+xml",
+        sizes: "any",
+        href: "/favicon.svg",
+      },
+      {
+        rel: "shortcut icon",
+        href: "/favicon.svg",
       },
     ],
   }),
@@ -74,11 +65,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <>
-      <div className="animate-page-enter">
-        <Outlet />
-      </div>
-      <Toaster position="top-center" />
-    </>
+    <div className="animate-page-enter">
+      <Outlet />
+    </div>
   );
 }
