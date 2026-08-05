@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
+import plurallLogo from "@/assets/plurall-logo.png";
 import {
-  BookOpen,
   Cloud,
   FileText,
   GraduationCap,
@@ -19,13 +19,16 @@ export interface HubLink {
   title: string;
   description: string;
   url: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  image?: string;
   accent: "red" | "yellow" | "cyan" | "green";
 }
 
 export interface HubGroup {
   id: string;
   label: string;
+  /** Se definido, o item do menu abre este link externo em nova aba. */
+  href?: string;
   links: HubLink[];
 }
 
@@ -53,17 +56,18 @@ export const hubGroups: HubGroup[] = [
         accent: "cyan",
       },
       {
-        title: "Diário Compartilhado",
-        description: "Registro diário das aulas entre escola e coordenação.",
-        url: "https://stepeduc.com.br/",
-        icon: BookOpen,
+        title: "Embarque Plural",
+        description: "Cadastrar ou migrar suas turmas no Plurall",
+        url: "https://experienciaplurall.my.canva.site/embarque-plurall",
+        image: plurallLogo,
         accent: "yellow",
       },
     ],
   },
   {
     id: "materiais",
-    label: "Materiais e Nuvem",
+    label: "Arquivos",
+    href: "https://drive.google.com/drive/folders/1wswXyPAtVFl-4vcUtFZ6kGvX6NsrJzTG?usp=sharing",
     links: [
       {
         title: "Drive de Materiais",

@@ -58,7 +58,12 @@ function HubPage() {
 
             <div className="hidden items-center gap-7 text-sm font-medium text-step-navy md:flex">
               {hubGroups.map((group) => (
-                <a key={group.id} href={`#${group.id}`} className="transition-opacity hover:opacity-70">
+                <a
+                  key={group.id}
+                  href={group.href ?? `#${group.id}`}
+                  {...(group.href ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="transition-opacity hover:opacity-70"
+                >
                   {group.label}
                 </a>
               ))}
@@ -196,7 +201,11 @@ function LinkCard({ link }: { link: HubLink }) {
           className="flex h-11 w-11 items-center justify-center rounded-xl"
           style={{ backgroundColor: `color-mix(in oklab, ${color} 22%, transparent)` }}
         >
-          <Icon className="h-5 w-5" style={{ color }} />
+          {link.image ? (
+            <img src={link.image} alt="" className="h-7 w-7 object-contain" />
+          ) : Icon ? (
+            <Icon className="h-5 w-5" style={{ color }} />
+          ) : null}
         </span>
         <ArrowUpRight className="h-5 w-5 text-white/40 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white" />
       </div>
